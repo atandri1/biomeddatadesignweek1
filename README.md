@@ -8,3 +8,6 @@ The first step in this method is creating a workable cost matrix. As there may b
 
 The next steps are mathematical matrix functions that ultimately calculates a permutation matrix with one "assignment" in each row and column (i.e. one doctor is assigned to one position).
 
+First, the maximum value of each row is determined, and subtracted from every other element in the row. 
+Zeros are then found and marked. The column(s) with zeros are covered, and the process of finding the maximum value and subtracting is repeated on the resulting smaller matrix. 
+
