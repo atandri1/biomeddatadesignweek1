@@ -10,3 +10,7 @@ The convex optimization minimizes cost in producing a permutation matrix of only
 The number of assignments for each hospital was calculated so that each hospital would have a roughly equal number of doctors. For example, if there were 5 doctors and 5 hospitals, each hospital would only have one assignment. However, if there were 6 doctors and 5 hospitals, each hospital is calculated to have at most two possible assignments. 
 
 A 5x4 example preference matrix was included in this code as a test. This matrix can be replaced with any desired preference matrix. 
+
+Method 2:
+
+
