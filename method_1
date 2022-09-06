@@ -1,0 +1,18 @@
+import numpy as np
+import cvxpy as cp
+
+def linsumassignment(matrix):
+    numberofassignments = int(np.ceil(matrix.shape[0]/matrix.shape[1]))
+    selection = cp.Variable(shape=matrix.shape,boolean=True)
+    group_constraint = cp.sum(selection,axis=0) <= numberofassignments
+    assignment_constraint = cp.sum(selection, axis=1) == 1
+    cost = cp.sum(cp.multiply(matrix,selection))
+    constraints = [group_constraint, assignment_constraint]
+    assign_prob = cp.Problem(cp.Minimize(cost),constraints)
+    assign_prob.solve()
+    #print(selection.value)
+    return selection.value
+
+preferences = np.array([[1,2,3,4,5], [5,4,3,2,1], [2,3,4,5,1], [3,4,5,1,2]])
+print(preferences)
+print(linsumassignment(preferences))
