@@ -1,11 +1,12 @@
 # biomeddatadesignweek1
 
-This code uses the hungarian algorithm to solve the linear sum assignment problem of assigning doctors to hospitals. This is a common optimization technique that minimizes (or maximizes, depending on how preference is reported) "cost", assigning the maximum number of people to their largest preference. 
 
-The first step in this method is creating a workable cost matrix. As there may be more doctors than hospitals, each hospital can have multiple positions, ultimately making the number of positions >= the number of doctors. However, the doctor's preferences were for hospitals, not positions, so the matrix had to be expanded so the positions within a hospital had the same ranking from the same doctor. This process of matrix construction can be seen in the "expandmatrix" function and previous lines of code.
+Method 1:
 
-The next steps are mathematical matrix functions that ultimately calculates a permutation matrix with one "assignment" in each row and column (i.e. one doctor is assigned to one position).
+This method solves the linear sum assignment problem by forming it into a convex optimization problem. The input matrix should have each of the doctor's prreferences as rows, with each column corresponding to a particular hospital. 
 
-First, the minimum/maximum value of each row is determined, and subtracted from every other element in the row. 
-Zeros are then found and marked. The column(s) with zeros are covered, and the process of finding the maximum value and subtracting is repeated on the resulting smaller matrix. 
+The convex optimization minimizes cost in producing a permutation matrix of only entries of 1 and 0, where 1=assignment to position and 0=no assignment to this position. The constraints for the convex optimization problem was that each row should have a sum of 1 (only one assignment per doctor) and that each column should have a sum equal to the number of assignments to that hospital. 
 
+The number of assignments for each hospital was calculated so that each hospital would have a roughly equal number of doctors. For example, if there were 5 doctors and 5 hospitals, each hospital would only have one assignment. However, if there were 6 doctors and 5 hospitals, each hospital is calculated to have at most two possible assignments. 
+
+A 5x4 example preference matrix was included in this code as a test. This matrix can be replaced with any desired preference matrix. 
