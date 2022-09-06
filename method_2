@@ -1,0 +1,119 @@
+from scipy.optimize import linear_sum_assignment 
+import numpy as np
+ 
+def Hungarian(CC):
+    C = CC - np.min(CC,axis=(0,1))
+    # KM algo
+    N = C.shape[0] # N doc
+    K = C.shape[1] # K hos
+ 
+    LX = np.max(C,axis=1) # LX init 
+    LY = np.zeros((K)) # LY init
+    
+    match = -np.ones((N)) # index x matches value y
+ 
+    # Depth First Search
+    def DFS(x):
+        # x is in augpath
+        visitx[x] = 1
+ 
+        for y in range(K):
+            if not visity[y]:
+                t = LX[x]+LY[y]-C[x,y]
+                if t == 0: # matchable
+                    visity[y] = 1 # add y in augpath
+                
+                    if not np.any(match==y): # if y in not matched
+                        match[x] = y # match x and y
+                        return True
+                    else:
+                        if DFS(np.where(match==y)[0][0]): # DFS augpath
+                            match[x] = y # match x and y
+                            return True
+                elif (t > 0): # t>0, need LX and LY update
+                    delta[y] = np.min([t,delta[y]]) # record smaller delta to change
+                else:
+                    print('t<0!')
+        return False # can't find augpath here
+ 
+    # visitx = np.zeros((N))
+    # visity = np.zeros((K))
+ 
+    for x in range(N):
+        # init visit (in the augpath)
+        visitx = np.zeros((N))
+        visity = np.zeros((K))
+        delta = np.inf*np.ones((K))
+ 
+        while True: # loop while not find augpath (because of delta)
+            visitx = np.zeros((N))
+            visity = np.zeros((K))
+            if DFS(x):
+                break
+            
+            # calulate min delta
+            Delta = np.min(delta[visity==0])
+ 
+            if Delta == 0:
+                print('Delta==0!')
+ 
+            # update LX, LY in the path
+            LX = LX - Delta*visitx
+            LY = LY + Delta*visity
+            # for y not in path, LY -= Delta
+            delta = delta - Delta*(1-visity)
+    
+    ans = (list(np.arange(N)),list(match))
+    return ans
+ 
+def main():
+    K = 20
+    Capacity = np.random.randint(10,size=(K)) +1
+    position = np.zeros((np.sum(Capacity)))
+    prefer = np.random.randint(10,size=(np.sum(Capacity),K))
+    # prefer = np.random.rand(np.sum(Capacity),10)
+ 
+    C = np.zeros((np.shape(prefer)[0],np.sum(Capacity)))
+    for i_doc in range(np.shape(prefer)[0]):
+        flag = 0
+        for i_hos in range(np.shape(prefer)[1]):
+            C[i_doc,flag:flag+Capacity[i_hos]] = prefer[i_doc,i_hos]
+            flag = flag + Capacity[i_hos]
+ 
+    flag = 0
+    for i_hos in range(np.shape(prefer)[1]):
+        position[flag:flag+Capacity[i_hos]] = i_hos
+        flag = flag + Capacity[i_hos]
+ 
+    x = Hungarian(C)
+    print(x)
+    print(np.array(x[0]).astype(np.int))
+    # print(position[0])
+    ans1 = np.array([position[i] for i in np.array(x[1]).astype(np.int)])
+    print(ans1.astype(np.int))
+ 
+    sum1 = 0
+    for i in range(C.shape[0]):
+        sum1 = sum1 + C[np.array(x[0]).astype(np.int)[i],np.array(x[1]).astype(np.int)[i]]
+    print(sum1)
+ 
+    print('and')
+ 
+    xx = linear_sum_assignment(C,True)
+    print(xx)
+    print(np.array(xx[0]).astype(np.int))
+    # print(position[0])
+    ans2 = np.array([position[i] for i in np.array(xx[1]).astype(np.int)])
+    print(ans2.astype(np.int))
+ 
+    sum2 = 0
+    for i in range(C.shape[0]):
+        sum2 = sum2 + C[np.array(xx[0]).astype(np.int)[i],np.array(xx[1]).astype(np.int)[i]]
+    print(sum2)
+ 
+    print('done!')
+    print(sum1==sum2)
+ 
+if __name__ == "__main__":
+    main()
+ 
